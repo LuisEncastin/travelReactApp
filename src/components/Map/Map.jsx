@@ -4,17 +4,17 @@ import { Paper, Typography, useMediaQuery } from '@material-ui/core';
 import LocationOnOutlinedIcon from '@material-ui/icons/LocationOnOutlined';
 import Rating from '@material-ui/lab/Rating';
 
+import mapStyles from '../../mapStyles';
 import useStyles from './styles.js';
 
-const Map = ({ setCoords, setBounds, coords }) => {
+const Map = ({ coords, places, setCoords, setBounds }) => {
     const classes = useStyles();
-    const isMobile = useMediaQuery('(min-width:600px)');
+    const isDesktop = useMediaQuery('(min-width:600px)');
 
     return(
         <div className={classes.mapContainer}>
             <GoogleMapReact
                 bootstrapURLKeys={{ key: 'AIzaSyCgVANtBRh6bCPr4YmyWbr7vglSZtytlTA' }}
-                //defaultCenter={coords}//Se podría quitar?
                 center={coords}
                 defaultZoom={14}
                 margin={[50, 50, 50, 50]}
@@ -25,13 +25,31 @@ const Map = ({ setCoords, setBounds, coords }) => {
                 }}
                 onChildClick={''}
             >
-
+            {places?.map((place, i) => (
+                    <div
+                        className={classes.markerContainer}
+                        lat={Number(place.latitude)}
+                        lng={Number(place.longitude)}
+                        key={i}
+                    >
+                        {!isDesktop
+                        ? <LocationOnOutlinedIcon color="primary" fontSize="large" />
+                        : (
+                            <Paper elevation={3} className={classes.paper}>
+                            <Typography className={classes.typography} variant="subtitle2" gutterBottom> {place.name}</Typography>
+                            <img
+                                className={classes.pointer}
+                                src={place.photo ? place.photo.images.large.url : 'https://www.foodserviceandhospitality.com/wp-content/uploads/2016/09/Restaurant-Placeholder-001.jpg'}
+                                alt=""
+                            />
+                            <Rating name="read-only" size="small" value={Number(place.rating)} readOnly />
+                            </Paper>
+                        )}
+                    </div>
+            ))}
             </GoogleMapReact>
         </div>
     );
 };
 
 export default Map;
-
-
-// center coords= {lat:0, lng:0}
